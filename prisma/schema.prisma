@@ -87,3 +87,10 @@ model TwitterBio {
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     bio       String
 }
+
+model BioCount {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    count     Int      @default(0)
+}

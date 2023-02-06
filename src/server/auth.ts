@@ -44,6 +44,14 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    redirect({ url, baseUrl }) {
+      const isApiRoute = url.startsWith("/api/auth");
+      if (isApiRoute) {
+        return url;
+      } else {
+        return baseUrl;
+      }
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
