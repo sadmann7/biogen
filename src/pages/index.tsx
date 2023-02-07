@@ -1,18 +1,32 @@
+import { PLATFORM, VIBE } from "@prisma/client";
 import { type NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "../utils/api";
 
 // external imports
+import SelectBox from "@/components/SelectBox";
 import { FaGithub } from "react-icons/fa";
 
 type Inputs = {
   bio: string;
-  vibe: string;
-  platform: string;
+  vibe: VIBE;
+  platform: PLATFORM;
 };
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const vibes = typeof VIBE === "object" ? Object.values(VIBE) : [];
+  const [vibe, setVibe] = useState<VIBE>("PROFESSIONAL");
+  const platforms = typeof PLATFORM === "object" ? Object.values(PLATFORM) : [];
+  const [platform, setPlatform] = useState<PLATFORM>("FACEBOOK");
+
+  // react-hook-form
+  const { register, handleSubmit, control } = useForm<Inputs>();
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(data);
+  };
 
   return (
     <>
@@ -27,10 +41,10 @@ const Home: NextPage = () => {
           href="https://github.com/sadmann7/biogen"
           target="_blank"
           rel="noreferrer"
-          className="mx-auto flex w-fit items-center gap-1 rounded-full bg-white px-3 py-1 font-medium transition-colors hover:bg-gray-200 active:bg-gray-100"
+          className="mx-auto flex w-fit items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 shadow-md transition-colors hover:bg-gray-300 active:bg-gray-100"
         >
           <FaGithub className="mr-1 inline-block" size={18} />
-          <span>Star on GitHub</span>
+          <span className="">Star on GitHub</span>
         </a>
         <div className="grid gap-5">
           <h1 className="text-center text-3xl font-bold tracking-wide text-white sm:text-5xl">
@@ -40,6 +54,61 @@ const Home: NextPage = () => {
             69 Bios generated so far
           </span>
         </div>
+        <form
+          aria-label="generate bio from"
+          className="grid gap-6 whitespace-nowrap"
+          onSubmit={(...args) => void handleSubmit(onSubmit)(...args)}
+        >
+          <fieldset className="grid gap-3">
+            <label
+              htmlFor="bio"
+              className="text-sm font-medium text-white sm:text-base"
+            >
+              Copy your current bio (or write a few sentences about yourself)
+            </label>
+            <textarea
+              id="bio"
+              className="w-full rounded-md border-gray-400 bg-transparent px-4 pt-2.5 pb-10 text-sm text-white transition-colors placeholder:text-gray-400 sm:text-base"
+              placeholder="e.g. Junor web developer, posting about web development, tech, and more."
+              {...register("bio")}
+            />
+          </fieldset>
+          <fieldset className="grid gap-3">
+            <label
+              htmlFor="vibe"
+              className="text-sm font-medium text-white sm:text-base"
+            >
+              Select your vibe
+            </label>
+            <SelectBox
+              id="vibe"
+              control={control}
+              name="vibe"
+              options={vibes}
+              selected={vibe}
+              setSelected={setVibe}
+            />
+          </fieldset>
+          <fieldset className="grid gap-3">
+            <label
+              htmlFor="platform"
+              className="text-sm font-medium text-white sm:text-base"
+            >
+              Select your social media platform
+            </label>
+            <SelectBox
+              id="platform"
+              control={control}
+              name="platform"
+              options={platforms}
+              selected={platform}
+              setSelected={setPlatform}
+            />
+          </fieldset>
+          <button className="w-full rounded-md bg-gray-400 px-4 py-2 font-medium transition-colors enabled:hover:bg-gray-500 enabled:active:bg-gray-400">
+            Generate Bio
+          </button>
+        </form>
       </main>
     </>
   );

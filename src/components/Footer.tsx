@@ -1,3 +1,6 @@
+// external imports
+import { FaGithub } from "react-icons/fa";
+
 const Footer = () => {
   return (
     <footer aria-label="footer">
@@ -10,7 +13,10 @@ const Footer = () => {
           rel="noreferrer"
           className="text-white transition-opacity hover:text-opacity-80 active:text-opacity-90"
         >
-          Github
+          <FaGithub
+            className="text-gray-400 transition-colors hover:text-gray-200 active:text-gray-400"
+            size={22}
+          />
         </a>
       </div>
     </footer>

@@ -80,8 +80,6 @@ model BioCount {
 enum VIBE {
     PROFESSIONAL
     FUNNY
-    MOTIVATIONAL
-    INSPIRATIONAL
     CASUAL
 }
 
