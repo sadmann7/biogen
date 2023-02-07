@@ -2,7 +2,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 // external imports
 import {
@@ -13,13 +13,32 @@ import {
 
 const Navbar = () => {
   const { data: session, status } = useSession();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const handleScroll = () => {
+    if (window.scrollY > 0) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav
+    <header
       aria-label="navbar"
-      className="fixed top-0 left-0 z-20 flex w-full items-center gap-4"
+      className={
+        isScrolled
+          ? "fixed top-0 left-0 z-20 flex w-full items-center gap-4 bg-gray-500"
+          : "fixed top-0 left-0 z-20 flex w-full items-center gap-4"
+      }
+      onScroll={handleScroll}
     >
-      <div className="container mx-auto flex max-w-screen-lg items-center justify-between border-b-2 border-b-gray-500 px-4 py-5">
+      <nav className="container mx-auto flex max-w-screen-lg items-center justify-between border-b-2 border-b-gray-500 px-4 py-5">
         <Link
           aria-label="navigate to home page"
           href="/"
@@ -93,8 +112,8 @@ const Navbar = () => {
             Sign in
           </Link>
         )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

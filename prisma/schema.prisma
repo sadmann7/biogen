@@ -41,16 +41,14 @@ model Session {
 }
 
 model User {
-    id            String         @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    email         String?        @unique
+    email         String?   @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    facebookBios  FacebookBio[]
-    instagramBios InstagramBio[]
-    twitterBios   TwitterBio[]
+    bios          Bio[]
 }
 
 model VerificationToken {
@@ -61,31 +59,15 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model FacebookBio {
+model Bio {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     userId    String
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     bio       String
-}
-
-model InstagramBio {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    userId    String
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    bio       String
-}
-
-model TwitterBio {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    userId    String
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    bio       String
+    vibe      VIBE     @default(PROFESSIONAL)
+    platform  PLATFORM @default(FACEBOOK)
 }
 
 model BioCount {
@@ -93,4 +75,18 @@ model BioCount {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     count     Int      @default(0)
+}
+
+enum VIBE {
+    PROFESSIONAL
+    FUNNY
+    MOTIVATIONAL
+    INSPIRATIONAL
+    CASUAL
+}
+
+enum PLATFORM {
+    FACEBOOK
+    INSTAGRAM
+    TWITTER
 }
