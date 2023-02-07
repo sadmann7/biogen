@@ -40,7 +40,7 @@ const SelectBox = <TInputs extends FieldValues, TValue>({
           }}
         >
           <div className="relative">
-            <Listbox.Button className="relative w-full cursor-pointer rounded-md border border-gray-400 py-2.5 pl-4 pr-10 text-left text-gray-300 shadow-md focus:outline-none focus-visible:border-violet-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-violet-300 sm:text-sm">
+            <Listbox.Button className="relative w-full cursor-pointer rounded-md border border-gray-400 py-2.5 pl-4 pr-10 text-left text-gray-300 shadow-md focus:outline-none focus-visible:border-violet-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-violet-300 sm:text-base">
               <span className="block truncate">
                 {formatEnum(selected as string)}
               </span>
@@ -53,15 +53,18 @@ const SelectBox = <TInputs extends FieldValues, TValue>({
             </Listbox.Button>
             <Transition
               as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
+              enter="transition duration-100 ease-out"
+              enterFrom="transform scale-95 opacity-0"
+              enterTo="transform scale-100 opacity-100"
+              leave="transition duration-75 ease-out"
+              leaveFrom="transform scale-100 opacity-100"
+              leaveTo="transform scale-95 opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-100 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-100 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {options.map((option) => (
                   <Listbox.Option
                     key={option}
-                    className="relative cursor-pointer select-none py-2 pl-10 pr-4 text-gray-900 ui-selected:bg-violet-300 ui-active:bg-violet-200"
+                    className="relative cursor-pointer select-none py-2 pl-10 pr-4 text-gray-900 transition-colors hover:bg-gray-200 ui-selected:bg-violet-300 hover:ui-selected:bg-violet-300/80"
                     value={option}
                   >
                     {({ selected }) => (

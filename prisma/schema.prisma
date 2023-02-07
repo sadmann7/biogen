@@ -79,8 +79,8 @@ model BioCount {
 
 enum VIBE {
     PROFESSIONAL
+    AESTHETIC
     FUNNY
-    CASUAL
 }
 
 enum PLATFORM {

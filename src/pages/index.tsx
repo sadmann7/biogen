@@ -1,12 +1,13 @@
 import { PLATFORM, VIBE } from "@prisma/client";
-import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "../utils/api";
+import type { NextPageWithLayout } from "./_app";
 
 // external imports
 import SelectBox from "@/components/SelectBox";
+import Layout from "@/layouts/Layout";
 import { FaGithub } from "react-icons/fa";
 
 type Inputs = {
@@ -15,17 +16,70 @@ type Inputs = {
   platform: PLATFORM;
 };
 
-const Home: NextPage = () => {
+const Home: NextPageWithLayout = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const vibes = typeof VIBE === "object" ? Object.values(VIBE) : [];
   const [vibe, setVibe] = useState<VIBE>("PROFESSIONAL");
   const platforms = typeof PLATFORM === "object" ? Object.values(PLATFORM) : [];
   const [platform, setPlatform] = useState<PLATFORM>("FACEBOOK");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDone, setIsDone] = useState<boolean>(false);
+  const [generatedBios, setGeneratedBios] = useState<string>("");
+
+  console.log("Streamed response: ", generatedBios);
 
   // react-hook-form
   const { register, handleSubmit, control } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const prompt =
+      data.vibe === VIBE.FUNNY
+        ? `Generate 2 funny ${
+            data.platform
+          } bios with no hashtags and clearly labeled "1." and "2.". Make sure there is a joke in there and it's a little ridiculous. Make sure each generated bio is at max 20 words and base it on this context: ${
+            data.bio
+          }${data.bio.slice(-1) === "." ? "" : "."}`
+        : `Generate 2 ${vibe} ${
+            data.platform
+          } bios with no hashtags and clearly labeled "1." and "2.". Make sure each generated bio is at least 14 words and at max 20 words and base them on this context: ${
+            data.bio
+          }${data.bio.slice(-1) === "." ? "" : "."}`;
+
+    setGeneratedBios("");
+    setIsLoading(true);
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
+    console.log("Edge function returned.");
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    // This data is a ReadableStream
+    const responseData = response.body;
+    if (!responseData) return;
+
+    const reader = responseData.getReader();
+    const decoder = new TextDecoder();
+
+    while (!isDone) {
+      const { done, value } = await reader.read();
+      if (done) {
+        setIsDone(true);
+        break;
+      }
+      const decodedValue = decoder.decode(value);
+      setGeneratedBios((prev) => prev + decodedValue);
+    }
+
+    setIsDone(false);
+    setIsLoading(false);
   };
 
   return (
@@ -105,13 +159,19 @@ const Home: NextPage = () => {
               setSelected={setPlatform}
             />
           </fieldset>
-          <button className="w-full rounded-md bg-gray-400 px-4 py-2 font-medium transition-colors enabled:hover:bg-gray-500 enabled:active:bg-gray-400">
-            Generate Bio
+          <button
+            className="w-full rounded-md bg-gray-400 px-4 py-2 font-medium transition-colors enabled:hover:bg-gray-500 enabled:active:bg-gray-400"
+            disabled={isLoading}
+          >
+            {isLoading ? "Generating..." : "Generate"}
           </button>
         </form>
+        <div className="text-white">{generatedBios}</div>
       </main>
     </>
   );
 };
 
 export default Home;
+
+Home.getLayout = (page) => <Layout>{page}</Layout>;
