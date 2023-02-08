@@ -73,7 +73,7 @@ const Navbar = () => {
                 <Menu.Item>
                   <Link
                     aria-label="navigate to account page"
-                    href={"/dashboard/account"}
+                    href={"/account"}
                     className="group flex w-full items-center rounded-md bg-transparent px-2 py-2 ui-active:bg-black/20"
                   >
                     <UserCircleIcon

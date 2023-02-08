@@ -9,6 +9,24 @@ export const bioRounter = createTRPCRouter({
     return bios;
   }),
 
+  getPaginated: protectedProcedure
+    .input(
+      z.object({
+        cursor: z.string().nullish(),
+        take: z.number().optional(),
+        skip: z.number().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const bios = await ctx.prisma.bio.findMany({
+        take: input.take,
+        skip: input.skip,
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        orderBy: { id: "desc" },
+      });
+      return bios;
+    }),
+
   getOne: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const bio = await ctx.prisma.bio.findUnique({
       where: {
@@ -56,13 +74,20 @@ export const bioRounter = createTRPCRouter({
       return bio;
     }),
 
-  delete: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    const bio = await ctx.prisma.bio.delete({
-      where: {
-        id: input,
-      },
-    });
-    return bio;
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const bio = await ctx.prisma.bio.delete({
+        where: {
+          id: input,
+        },
+      });
+      return bio;
+    }),
+
+  getBioCount: publicProcedure.query(async ({ ctx }) => {
+    const bioCount = await ctx.prisma.bioCount.findFirst();
+    return bioCount;
   }),
 
   increaseBioCount: publicProcedure
@@ -87,9 +112,4 @@ export const bioRounter = createTRPCRouter({
       });
       return bioCount;
     }),
-
-  getBioCount: publicProcedure.query(async ({ ctx }) => {
-    const bioCount = await ctx.prisma.bioCount.findFirst();
-    return bioCount;
-  }),
 });
