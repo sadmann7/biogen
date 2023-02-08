@@ -40,7 +40,7 @@ const SelectBox = <TInputs extends FieldValues, TValue>({
           }}
         >
           <div className="relative">
-            <Listbox.Button className="relative w-full cursor-pointer rounded-md border border-gray-400 py-2.5 pl-4 pr-10 text-left text-gray-300 shadow-md focus:outline-none focus-visible:border-violet-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-violet-300 sm:text-base">
+            <Listbox.Button className="relative w-full cursor-pointer rounded-md border border-gray-400 py-2.5 pl-4 pr-10 text-left text-sm text-gray-300 shadow-md focus:outline-none focus-visible:border-violet-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-violet-300 sm:text-base">
               <span className="block truncate">
                 {formatEnum(selected as string)}
               </span>
@@ -57,7 +57,7 @@ const SelectBox = <TInputs extends FieldValues, TValue>({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-100 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-100 py-1 text-xs shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {options.map((option) => (
                   <Listbox.Option
                     key={option}

@@ -118,7 +118,7 @@ const Home: NextPageWithLayout = () => {
     setIsLoading(false);
   };
 
-  //  scroll to the generated bios when the form is submitted
+  // scroll to the generated bios when the form is submitted
   const biogenRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!biogenRef.current || generatedBios.length === 0) return;
@@ -147,13 +147,13 @@ const Home: NextPageWithLayout = () => {
           <h1 className="w-full text-center text-3xl font-bold text-white sm:text-5xl">
             Generate your social media bios with AI
           </h1>
-          <span className="text-base text-gray-300 sm:text-lg">
+          <span className="text-center text-base text-gray-300 sm:text-lg">
             {bioCountQuery.data?.count} Bios generated so far
           </span>
         </div>
         <form
           aria-label="generate bio from"
-          className="grid gap-6 whitespace-nowrap"
+          className="grid w-full gap-6"
           onSubmit={(...args) => void handleSubmit(onSubmit)(...args)}
         >
           <fieldset className="grid gap-3">
@@ -204,7 +204,7 @@ const Home: NextPageWithLayout = () => {
           </fieldset>
           <button
             aria-label="generate your bio"
-            className="w-full rounded-md bg-gray-400 px-4 py-2 font-medium transition-colors enabled:hover:bg-gray-500 enabled:active:bg-gray-400"
+            className="w-full rounded-md bg-gray-400 px-4 py-2 text-sm font-medium transition-colors enabled:hover:bg-gray-500 enabled:active:bg-gray-400 sm:text-base"
             disabled={isLoading}
           >
             {isLoading ? "Loading..." : "Generate your bio"}
