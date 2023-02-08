@@ -77,7 +77,7 @@ const Account: NextPageWithLayout = () => {
           )}
           <motion.button
             aria-label="load more bios"
-            className="rounded-md bg-gray-700 py-2 font-semibold text-white shadow-md transition enabled:hover:bg-gray-800 enabled:active:bg-gray-700"
+            className="rounded-md bg-gray-700 py-2 font-semibold text-white shadow-md transition enabled:hover:bg-gray-800 enabled:active:bg-gray-700 disabled:cursor-not-allowed"
             variants={item}
             onClick={() => void biosQuery.fetchNextPage()}
             disabled={!biosQuery.hasNextPage || biosQuery.isFetchingNextPage}
@@ -149,10 +149,13 @@ const BioCard = ({ bio }: { bio: Bio }) => {
       </button>
       <button
         aria-label="delete bio"
-        className="absolute right-2 hidden rounded-full bg-red-400 p-0.5 text-white transition-colors hover:bg-red-500 active:bg-red-400 group-hover:block"
+        className="absolute right-2 z-10 hidden transition group-hover:block"
         onClick={() => void deleteBioMutation.mutate(bio.id)}
       >
-        <XMarkIcon className="aspect-square w-5" aria-hidden="true" />
+        <XMarkIcon
+          className="aspect-square w-6 text-red-400 transition-colors hover:text-red-500 active:text-red-400"
+          aria-hidden="true"
+        />
       </button>
     </motion.div>
   );

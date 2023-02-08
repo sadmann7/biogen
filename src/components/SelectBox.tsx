@@ -57,11 +57,11 @@ const SelectBox = <TInputs extends FieldValues, TValue>({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-200 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-100 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 {options.map((option) => (
                   <Listbox.Option
                     key={option}
-                    className="relative cursor-pointer select-none py-2 pl-10 pr-4 text-gray-900 transition hover:bg-gray-300 ui-selected:bg-violet-300 hover:ui-selected:bg-violet-400/60"
+                    className="relative cursor-pointer select-none py-2 pl-10 pr-4 text-gray-900 transition hover:bg-gray-300 ui-selected:bg-violet-300 hover:ui-selected:bg-violet-400/80"
                     value={option}
                   >
                     {({ selected }) => (
