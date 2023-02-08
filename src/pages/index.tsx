@@ -1,5 +1,6 @@
 import { PLATFORM, VIBE } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -19,8 +20,7 @@ type Inputs = {
 };
 
 const Home: NextPageWithLayout = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+  const { status } = useSession();
   const vibes = typeof VIBE === "object" ? Object.values(VIBE) : [];
   const [vibe, setVibe] = useState<VIBE>("PROFESSIONAL");
   const platforms = typeof PLATFORM === "object" ? Object.values(PLATFORM) : [];
@@ -28,6 +28,34 @@ const Home: NextPageWithLayout = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
   const [generatedBios, setGeneratedBios] = useState<string>("");
+
+  // get bios query
+  const biosQuery = api.bio.get.useQuery(undefined, {
+    enabled: status === "authenticated",
+  });
+
+  // create bio mutation
+  const createBioMutation = api.bio.create.useMutation({
+    onSuccess: async () => {
+      await biosQuery.refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  // get bioCount query
+  const bioCountQuery = api.bio.getBioCount.useQuery();
+
+  // increase bioCount mutation
+  const increaseBioCountMutation = api.bio.increaseBioCount.useMutation({
+    onSuccess: async () => {
+      await bioCountQuery.refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
 
   // react-hook-form
   const { register, handleSubmit, control } = useForm<Inputs>();
@@ -68,6 +96,9 @@ const Home: NextPageWithLayout = () => {
       throw new Error(response.statusText);
     }
 
+    setVibe(data.vibe);
+    setPlatform(data.platform);
+
     // This data is a ReadableStream
     const responseData = response.body;
     if (!responseData) return;
@@ -79,6 +110,7 @@ const Home: NextPageWithLayout = () => {
       const { done, value } = await reader.read();
       if (done) {
         setIsDone(true);
+        increaseBioCountMutation.mutate(2);
         break;
       }
       const decodedValue = decoder.decode(value);
@@ -119,7 +151,7 @@ const Home: NextPageWithLayout = () => {
             Generate your social media bios with AI
           </h1>
           <span className="text-base text-gray-300 sm:text-lg">
-            69 Bios generated so far
+            {bioCountQuery.data?.count} Bios generated so far
           </span>
         </div>
         <form
@@ -189,8 +221,8 @@ const Home: NextPageWithLayout = () => {
                 </h2>
                 <div className="grid place-items-center gap-6">
                   {generatedBios
-                    .substring(generatedBios.indexOf("1") + 3)
-                    .split("2.")
+                    .split(/1\.|2\./g)
+                    .filter((bio) => bio !== "")
                     .map((generatedBio) => {
                       return (
                         <div
@@ -199,6 +231,11 @@ const Home: NextPageWithLayout = () => {
                           onClick={() => {
                             void navigator.clipboard.writeText(generatedBio);
                             toast.success("Copied to clipboard");
+                            createBioMutation.mutate({
+                              bio: generatedBio,
+                              vibe,
+                              platform,
+                            });
                           }}
                         >
                           <p>{generatedBio}</p>
