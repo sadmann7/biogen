@@ -1,4 +1,5 @@
 import { api } from "@/utils/api";
+import type { Bio } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
@@ -13,25 +14,17 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 
 const Account: NextPageWithLayout = () => {
   const { status } = useSession();
-  const apiUtils = api.useContext();
 
   // get bios query
   const biosQuery = api.bio.getPaginated.useInfiniteQuery(
-    { skip: 0, take: 10 },
+    {
+      limit: 10,
+    },
     {
       enabled: status === "authenticated",
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
-
-  // delete bio mutation
-  const deleteBioMutation = api.bio.delete.useMutation({
-    onMutate: async () => {
-      await apiUtils.bio.getPaginated.invalidate();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
 
   // framer motion
   const container = {
@@ -40,6 +33,7 @@ const Account: NextPageWithLayout = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
+        delayChildren: 0.5,
       },
     },
   };
@@ -74,34 +68,22 @@ const Account: NextPageWithLayout = () => {
           animate="visible"
         >
           {biosQuery.data.pages.map((page) =>
-            page.map((bio) => (
-              <motion.div
-                key={bio.id}
-                className="flex cursor-copy items-center justify-between rounded-lg bg-gray-700 p-4 transition-colors hover:bg-gray-800 active:bg-gray-700"
-                variants={item}
-                onClick={() => {
-                  void navigator.clipboard.writeText(bio.bio);
-                  toast.success("Copied to clipboard!");
-                }}
-              >
-                <span className="text-white">{bio.bio}</span>
-                <button
-                  aria-label="delete bio"
-                  className="text-gray-300 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  onClick={() => deleteBioMutation.mutate(bio.id)}
-                >
-                  <XMarkIcon className="h-5 w-5" aria-hidden="true" />
-                </button>
-              </motion.div>
-            ))
+            page.bios.map((bio) => <BioCard bio={bio} key={bio.id} />)
           )}
+          <motion.button
+            aria-label="load more bios"
+            className="rounded-md bg-gray-700 py-2 font-semibold text-white shadow-md transition enabled:hover:bg-gray-800 enabled:active:bg-gray-700"
+            variants={item}
+            onClick={() => void biosQuery.fetchNextPage()}
+            disabled={!biosQuery.hasNextPage || biosQuery.isFetchingNextPage}
+          >
+            {biosQuery.isFetchingNextPage
+              ? "Loading..."
+              : biosQuery.hasNextPage
+              ? "Load more"
+              : "No more bios"}
+          </motion.button>
         </motion.div>
-        <button
-          className="w-full rounded-lg bg-gray-700 py-2 px-4 font-semibold text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 active:bg-gray-700"
-          onClick={() => void biosQuery.fetchPreviousPage()}
-        >
-          Load more
-        </button>
       </main>
     </>
   );
@@ -110,3 +92,48 @@ const Account: NextPageWithLayout = () => {
 export default Account;
 
 Account.getLayout = (page) => <Layout>{page}</Layout>;
+
+const BioCard = ({ bio }: { bio: Bio }) => {
+  const apiUtils = api.useContext();
+  // delete bio mutation
+  const deleteBioMutation = api.bio.delete.useMutation({
+    onSuccess: async () => {
+      await apiUtils.bio.getPaginated.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  // framer motion
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  return (
+    <motion.div
+      variants={item}
+      className="group relative flex items-center justify-between rounded-md bg-gray-700 px-5 py-3 shadow-md ring-1 ring-gray-500 transition hover:bg-gray-800 active:bg-gray-700"
+    >
+      <button
+        aria-label="copy bio"
+        className="cursor-copy text-left text-white"
+        onClick={() => {
+          void navigator.clipboard.writeText(bio.bio);
+          toast.success("Copied to clipboard!");
+        }}
+        disabled={deleteBioMutation.isLoading}
+      >
+        {deleteBioMutation.isLoading ? "Loading..." : bio.bio}
+      </button>
+      <button
+        aria-label="delete bio"
+        className="absolute right-2 hidden rounded-full bg-red-400 p-0.5 text-white transition-colors hover:bg-red-500 active:bg-red-400 group-hover:block"
+        onClick={() => void deleteBioMutation.mutate(bio.id)}
+      >
+        <XMarkIcon className="aspect-square w-5" aria-hidden="true" />
+      </button>
+    </motion.div>
+  );
+};

@@ -12,29 +12,30 @@ export const bioRounter = createTRPCRouter({
   getPaginated: protectedProcedure
     .input(
       z.object({
+        limit: z.number().min(1).max(100),
         cursor: z.string().nullish(),
-        take: z.number().optional(),
-        skip: z.number().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       const bios = await ctx.prisma.bio.findMany({
-        take: input.take,
-        skip: input.skip,
+        take: input.limit + 1,
+        where: {},
         cursor: input.cursor ? { id: input.cursor } : undefined,
-        orderBy: { id: "desc" },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
-      return bios;
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (bios.length > input.limit) {
+        const nextItem = bios.pop();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nextCursor = nextItem!.id;
+      }
+      return {
+        bios,
+        nextCursor,
+      };
     }),
-
-  getOne: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    const bio = await ctx.prisma.bio.findUnique({
-      where: {
-        id: input,
-      },
-    });
-    return bio;
-  }),
 
   create: protectedProcedure
     .input(

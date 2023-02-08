@@ -32,11 +32,12 @@ const Home: NextPageWithLayout = () => {
 
   // create bio mutation
   const createBioMutation = api.bio.create.useMutation({
-    onMutate: async () => {
+    onSuccess: async () => {
       await apiUtils.bio.getPaginated.invalidate();
     },
     onError: (err) => {
-      toast.error(err.message);
+      // toast.error(err.message);
+      console.log(err);
     },
   });
 
@@ -45,7 +46,7 @@ const Home: NextPageWithLayout = () => {
 
   // increase bioCount mutation
   const increaseBioCountMutation = api.bio.increaseBioCount.useMutation({
-    onMutate: async () => {
+    onSuccess: async () => {
       await apiUtils.bio.getBioCount.invalidate();
     },
     onError: (err) => {
@@ -202,6 +203,7 @@ const Home: NextPageWithLayout = () => {
             />
           </fieldset>
           <button
+            aria-label="generate your bio"
             className="w-full rounded-md bg-gray-400 px-4 py-2 font-medium transition-colors enabled:hover:bg-gray-500 enabled:active:bg-gray-400"
             disabled={isLoading}
           >
@@ -224,7 +226,7 @@ const Home: NextPageWithLayout = () => {
                         <button
                           aria-label="copy generated bio to clipboard"
                           key={generatedBio}
-                          className="cursor-copy rounded-md bg-gray-200 px-5 py-3 shadow-md ring-1 ring-gray-500 transition hover:bg-gray-300 active:bg-gray-200"
+                          className="cursor-copy rounded-md bg-gray-700 px-5 py-3 text-white shadow-md ring-1 ring-gray-500 transition hover:bg-gray-800 active:bg-gray-700"
                           onClick={() => {
                             void navigator.clipboard.writeText(generatedBio);
                             toast.success("Copied to clipboard");
