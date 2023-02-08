@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^1.0.0-beta.6",
     "@headlessui/react": "^1.7.10",
     "@headlessui/tailwindcss": "^0.1.2",
     "@heroicons/react": "^2.0.14",

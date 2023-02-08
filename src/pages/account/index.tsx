@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { toast } from "react-toastify";
 import type { NextPageWithLayout } from "../_app";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 // external imports
 import ErrorScreen from "@/components/screens/ErrorScreen";
@@ -42,6 +43,9 @@ const Account: NextPageWithLayout = () => {
     visible: { opacity: 1, y: 0 },
   };
 
+  // auto-animate
+  const [animationParent] = useAutoAnimate();
+
   if (biosQuery.isLoading) {
     return <LoadingScreen />;
   }
@@ -66,6 +70,7 @@ const Account: NextPageWithLayout = () => {
           variants={container}
           initial="hidden"
           animate="visible"
+          ref={animationParent}
         >
           {biosQuery.data.pages.map((page) =>
             page.bios.map((bio) => <BioCard bio={bio} key={bio.id} />)
@@ -97,8 +102,23 @@ const BioCard = ({ bio }: { bio: Bio }) => {
   const apiUtils = api.useContext();
   // delete bio mutation
   const deleteBioMutation = api.bio.delete.useMutation({
-    onSuccess: async () => {
-      await apiUtils.bio.getPaginated.invalidate();
+    onMutate: async () => {
+      await apiUtils.bio.getPaginated.cancel();
+      apiUtils.bio.getPaginated.setInfiniteData({ limit: 10 }, (data) => {
+        if (!data) {
+          return {
+            pages: [],
+            pageParams: [],
+          };
+        }
+        return {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            bios: page.bios.filter((b) => b.id !== bio.id),
+          })),
+        };
+      });
     },
     onError: (err) => {
       toast.error(err.message);
