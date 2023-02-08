@@ -8,9 +8,9 @@ if (!env.OPENAI_API_KEY) {
   );
 }
 
-export const config = {
-  runtime: "edge",
-};
+// export const config = {
+//   runtime: "edge",
+// };
 
 const handler = async (req: Request, res: NextApiResponse) => {
   const prompt = ((await req.json()) as { prompt: string }).prompt;
