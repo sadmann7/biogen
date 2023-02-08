@@ -59,7 +59,7 @@ const Account: NextPageWithLayout = () => {
       </Head>
       <main className="container mx-auto mt-28 mb-14 flex min-h-screen max-w-2xl flex-col gap-10 px-4">
         <h1 className="text-center text-xl font-semibold text-white sm:text-3xl">
-          Your saved bios
+          Your copied bios
         </h1>
         <motion.div
           className="grid gap-4"

@@ -33,7 +33,7 @@ const Navbar = () => {
       aria-label="navbar"
       className={
         isScrolled
-          ? "fixed top-0 left-0 z-20 flex w-full items-center gap-4 bg-gray-500"
+          ? "fixed top-0 left-0 z-20 flex w-full items-center gap-4 bg-gray-900"
           : "fixed top-0 left-0 z-20 flex w-full items-center gap-4"
       }
       onScroll={handleScroll}
@@ -107,7 +107,7 @@ const Navbar = () => {
           <Link
             aria-label="sign in"
             href={"/api/auth/signin"}
-            className="rounded-md bg-gray-100 bg-opacity-20 px-4 py-2 text-sm font-medium text-white transition hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+            className="rounded-md bg-gray-300 px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 active:bg-gray-300"
           >
             Sign in
           </Link>
