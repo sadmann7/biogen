@@ -54,6 +54,8 @@ const Account: NextPageWithLayout = () => {
     return <ErrorScreen error={biosQuery.error} />;
   }
 
+  
+
   return (
     <>
       <Head>
