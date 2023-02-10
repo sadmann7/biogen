@@ -1,16 +1,16 @@
 import { api } from "@/utils/api";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import type { Bio } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { toast } from "react-toastify";
 import type { NextPageWithLayout } from "../_app";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 // external imports
-import ErrorScreen from "@/components/screens/ErrorScreen";
-import LoadingScreen from "@/components/screens/LoadingScreen";
 import Layout from "@/layouts/Layout";
+import ErrorScreen from "@/screens/ErrorScreen";
+import LoadingScreen from "@/screens/LoadingScreen";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 const Account: NextPageWithLayout = () => {
@@ -53,8 +53,6 @@ const Account: NextPageWithLayout = () => {
   if (biosQuery.isError) {
     return <ErrorScreen error={biosQuery.error} />;
   }
-
-  
 
   return (
     <>
