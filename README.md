@@ -15,6 +15,7 @@ This project generates social media bios using AI. It is bootstrapped with the [
 
 ## Features
 
+- Authentication using NextAuth.js
 - Generate bios using the OpenAI GPT-3 API based on the user's input
 - Save generated bios to a database (authenticated users only)
 - Display, and delete saved bios (authenticated users only)
@@ -24,7 +25,7 @@ This project generates social media bios using AI. It is bootstrapped with the [
 ### 1. Clone the repository
 
 ```bash
-git clone <repository url>
+git clone https://github.com/sadmann7/biogen.git
 ```
 
 ### 2. Install dependencies
