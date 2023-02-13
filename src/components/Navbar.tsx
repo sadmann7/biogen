@@ -2,7 +2,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 
 // external imports
 import {
@@ -13,30 +13,11 @@ import {
 
 const Navbar = () => {
   const { data: session, status } = useSession();
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  const handleScroll = () => {
-    if (window.scrollY > 0) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <header
       aria-label="navbar"
-      className={
-        isScrolled
-          ? "fixed top-0 left-0 z-20 flex w-full items-center gap-4 bg-gray-900"
-          : "fixed top-0 left-0 z-20 flex w-full items-center gap-4"
-      }
-      onScroll={handleScroll}
+      className="fixed top-0 left-0 z-20 flex w-full items-center gap-4 bg-gray-900"
     >
       <nav className="container mx-auto flex max-w-screen-lg items-center justify-between border-b-2 border-b-gray-500 px-4 py-5">
         <Link
